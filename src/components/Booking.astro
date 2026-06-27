@@ -1,0 +1,58 @@
+---
+import BookingForm from './BookingForm.jsx';
+---
+
+<section id="booking" class="relative py-28 lg:py-36 overflow-hidden" aria-labelledby="booking-heading">
+
+  <!-- Background -->
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-30"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
+  <!-- Background glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-[6%] blur-3xl pointer-events-none"
+       style="background: radial-gradient(ellipse, #4f7cff, transparent);">
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Section header -->
+    <div class="max-w-2xl mb-14">
+      <div class="section-label mb-5">Book a Call</div>
+      <h2 id="booking-heading" class="font-display font-bold text-section text-ink mb-5">
+        Let's talk about<br/>
+        <span class="text-ink-muted">what you're building.</span>
+      </h2>
+      <p class="text-ink-muted leading-relaxed">
+        No pitch decks, no NDAs on day one. Just a direct conversation about your project,
+        timeline, and budget — so we can tell you honestly if we're a good fit.
+      </p>
+
+      <!-- Guarantees -->
+      <div class="mt-8 space-y-3">
+        {[
+          'Free 45-minute call, zero commitment',
+          'Speak directly with a senior engineer',
+          'Get a rough scope estimate within 24h',
+        ].map(item => (
+          <div class="flex items-center gap-3">
+            <div class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+                 style="background: rgba(79,124,255,0.1); border: 1px solid rgba(79,124,255,0.25);">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M2 5l2.5 2.5 3.5-4" stroke="#4f7cff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="text-sm text-ink-muted">{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- The form card -->
+    <div class="rounded-3xl p-6 lg:p-10"
+         style="background: rgba(12,17,32,0.7); border: 1px solid rgba(30,45,69,0.8); backdrop-filter: blur(16px); box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(79,124,255,0.06);">
+      <BookingForm client:load />
+    </div>
+
+  </div>
+</section>

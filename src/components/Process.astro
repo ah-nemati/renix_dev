@@ -1,0 +1,159 @@
+---
+const steps = [
+  {
+    phase: 'Phase 01',
+    title: 'Discovery & Strategy',
+    description: 'We start by deeply understanding your idea, audience, and constraints. You get a clear product roadmap and technical architecture doc — before a single line of code.',
+    deliverables: ['Product brief', 'Architecture plan', 'Timeline & pricing'],
+    duration: '3–5 days',
+    icon: 'compass',
+  },
+  {
+    phase: 'Phase 02',
+    title: 'Design & Prototype',
+    description: 'High-fidelity mockups of core flows, reviewed with you in real time. Interaction patterns established, design system locked, and stakeholder buy-in secured.',
+    deliverables: ['Figma mockups', 'Interactive prototype', 'Design system'],
+    duration: '1–2 weeks',
+    icon: 'layers',
+  },
+  {
+    phase: 'Phase 03',
+    title: 'Build & Iterate',
+    description: 'Two-week sprints with demo calls. You see real progress each cycle. Staging environment from day one so you can test alongside us.',
+    deliverables: ['Sprint demos', 'Staging access', 'Weekly reports'],
+    duration: '4–12 weeks',
+    icon: 'code',
+  },
+  {
+    phase: 'Phase 04',
+    title: 'Launch & Support',
+    description: 'Deployment to production, monitoring setup, and a handoff session so your team owns the product. Post-launch support included for 30 days.',
+    deliverables: ['Production deploy', 'Docs & training', '30-day support'],
+    duration: 'Ongoing',
+    icon: 'rocket',
+  },
+];
+---
+
+<section id="process" class="relative py-28 lg:py-36 overflow-hidden" aria-labelledby="process-heading">
+
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
+  <!-- Background glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] opacity-5 blur-3xl pointer-events-none"
+       style="background: radial-gradient(ellipse, #a855f7, transparent);">
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="max-w-2xl mb-16 lg:mb-24">
+      <div class="section-label mb-5">How We Work</div>
+      <h2 id="process-heading" class="font-display font-bold text-section text-ink mb-5">
+        From idea to launch,
+        <br/><span class="text-ink-muted">you're with us at every step.</span>
+      </h2>
+      <p class="text-ink-muted leading-relaxed">
+        A transparent, milestone-driven process so you always know what's happening,
+        what's next, and what you're paying for.
+      </p>
+    </div>
+
+    <!-- Steps — alternating layout on desktop -->
+    <div class="relative">
+
+      <!-- Vertical connector line -->
+      <div class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
+           style="background: linear-gradient(to bottom, transparent, rgba(79,124,255,0.3) 15%, rgba(168,85,247,0.3) 50%, rgba(0,229,255,0.3) 85%, transparent);">
+      </div>
+
+      <div class="space-y-12 lg:space-y-0">
+        {steps.map((step, i) => (
+          <div class="relative lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
+
+            <!-- Center node on the timeline -->
+            <div class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full items-center justify-center z-10"
+                 style="background: #050810; border: 1px solid rgba(79,124,255,0.4); box-shadow: 0 0 16px rgba(79,124,255,0.2);">
+              <div class="w-3 h-3 rounded-full bg-accent"></div>
+            </div>
+
+            <!-- Left or right content -->
+            <div class={`${i % 2 === 1 ? 'lg:order-2' : ''} mb-6 lg:mb-12`}>
+              <div class="card-glass group relative">
+
+                <!-- Phase tag -->
+                <div class="flex items-center gap-3 mb-5">
+                  <span class="font-mono text-xs text-ink-faint tracking-widest">{step.phase}</span>
+                  <div class="flex-1 h-px bg-border/50"></div>
+                  <span class="text-xs text-ink-faint font-mono">{step.duration}</span>
+                </div>
+
+                <!-- Icon -->
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
+                     style="background: rgba(79,124,255,0.08); border: 1px solid rgba(79,124,255,0.15);">
+                  {step.icon === 'compass' && (
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="text-accent">
+                      <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2"/>
+                      <path d="M9 2v2M9 14v2M2 9h2M14 9h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                      <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+                    </svg>
+                  )}
+                  {step.icon === 'layers' && (
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="text-accent">
+                      <path d="M9 2L2 6l7 4 7-4-7-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                      <path d="M2 10l7 4 7-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                      <path d="M2 14l7 4 7-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                  )}
+                  {step.icon === 'code' && (
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="text-accent">
+                      <path d="M5 6L2 9l3 3M13 6l3 3-3 3M10 4l-2 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  )}
+                  {step.icon === 'rocket' && (
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="text-accent">
+                      <path d="M9 15s-4-4-4-8a4 4 0 018 0c0 4-4 8-4 8z" stroke="currentColor" stroke-width="1.2"/>
+                      <circle cx="9" cy="7" r="1.5" fill="currentColor"/>
+                      <path d="M5 13l-2 2M13 13l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                  )}
+                </div>
+
+                <h3 class="font-display font-semibold text-lg text-ink mb-3">{step.title}</h3>
+                <p class="text-ink-muted text-sm leading-relaxed mb-5">{step.description}</p>
+
+                <!-- Deliverables -->
+                <div class="space-y-2">
+                  {step.deliverables.map(d => (
+                    <div class="flex items-center gap-2.5">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0">
+                        <circle cx="7" cy="7" r="6" stroke="rgba(79,124,255,0.3)"/>
+                        <path d="M4.5 7l2 2 3-3" stroke="#4f7cff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="text-xs text-ink-muted font-medium">{d}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <!-- Spacer for the other column -->
+            <div class={`${i % 2 === 1 ? 'lg:order-1' : ''} hidden lg:block`}></div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="mt-20 text-center">
+      <p class="text-ink-muted mb-6">Ready to start? Discovery calls are free and commitment-free.</p>
+      <a href="#booking" class="btn-primary text-base px-8 py-4">
+        <span>Start with Discovery</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="relative z-10" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
