@@ -2,9 +2,21 @@
 const currentYear = new Date().getFullYear();
 
 const links = {
-  Services: ['Web Development', 'AI Solutions', 'Mobile Apps', 'Consulting'],
-  Company: ['About Us', 'Process', 'Case Studies', 'Blog'],
-  Legal: ['Privacy Policy', 'Terms of Service', 'Cookie Policy'],
+  Services: [
+    { label: 'Web Development', href: '/#services' },
+    { label: 'AI Solutions',    href: '/#services' },
+    { label: 'Mobile Apps',     href: '/#services' },
+    { label: 'Consulting',      href: '/#booking'  },
+  ],
+  Company: [
+    { label: 'Process',      href: '/#process'       },
+    { label: 'FAQ',          href: '/#faq'            },
+    { label: 'Book a Call',  href: '/#booking'        },
+  ],
+  Legal: [
+    { label: 'Privacy Policy',   href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms'   },
+  ],
 };
 
 const socials = [
@@ -74,7 +86,9 @@ const socials = [
           <ul class="space-y-3">
             {items.map(item => (
               <li>
-                <a href="#" class="text-sm text-ink-muted hover:text-ink transition-colors duration-200">{item}</a>
+                <a href={item.href} class="text-sm text-ink-muted hover:text-ink transition-colors duration-200">
+                  {item.label}
+                </a>
               </li>
             ))}
           </ul>
@@ -87,11 +101,42 @@ const socials = [
       <p class="text-xs text-ink-faint font-mono">
         © {currentYear} Renix.dev — All rights reserved.
       </p>
-      <div class="flex items-center gap-2">
-        <div class="glow-dot" style="width: 6px; height: 6px;"></div>
-        <span class="text-xs font-mono text-ink-faint">All systems operational</span>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <div class="glow-dot" style="width: 6px; height: 6px;"></div>
+          <span class="text-xs font-mono text-ink-faint">All systems operational</span>
+        </div>
+        <!-- Scroll to top -->
+        <button
+          id="scroll-top-btn"
+          aria-label="Scroll to top"
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-faint hover:text-ink transition-all duration-200 opacity-0 pointer-events-none"
+          style="border: 1px solid rgba(30,45,69,0.8); background: rgba(12,17,32,0.6);"
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 10V2M2 6l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
 
   </div>
 </footer>
+
+<script>
+  const scrollBtn = document.getElementById('scroll-top-btn');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      scrollBtn?.classList.remove('opacity-0', 'pointer-events-none');
+      scrollBtn?.classList.add('opacity-100');
+    } else {
+      scrollBtn?.classList.add('opacity-0', 'pointer-events-none');
+      scrollBtn?.classList.remove('opacity-100');
+    }
+  }, { passive: true });
+
+  scrollBtn?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

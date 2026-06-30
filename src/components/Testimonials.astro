@@ -1,0 +1,116 @@
+---
+const testimonials = [
+  {
+    quote: "Renix took our chaotic idea and turned it into a polished SaaS in under 10 weeks. Their technical depth is unmatched — they think like co-founders, not contractors.",
+    name: "Sarah Chen",
+    title: "Co-founder & CEO",
+    company: "NovaPay",
+    initials: "SC",
+    accent: "#4f7cff",
+  },
+  {
+    quote: "We've worked with five dev agencies. Renix is the first one that pushed back on our assumptions and made the product better because of it. Worth every penny.",
+    name: "Marcus Webb",
+    title: "Head of Product",
+    company: "HealthSync",
+    initials: "MW",
+    accent: "#a855f7",
+  },
+  {
+    quote: "The AI pipeline they built cut our manual processing time by 80%. Full ROI in six weeks. I wish we'd found them two years earlier.",
+    name: "Priya Nair",
+    title: "CTO",
+    company: "TradeStack",
+    initials: "PN",
+    accent: "#00e5ff",
+  },
+];
+---
+
+<section id="testimonials" class="relative py-28 lg:py-36 overflow-hidden section-deferred" aria-labelledby="testimonials-heading">
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
+  <!-- Background glow -->
+  <div class="absolute top-1/2 right-0 w-[600px] h-[600px] -translate-y-1/2 opacity-[4%] blur-3xl pointer-events-none"
+       style="background: radial-gradient(ellipse, #a855f7, transparent);">
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="max-w-2xl mb-16 lg:mb-20" data-reveal>
+      <div class="section-label mb-5">Client Stories</div>
+      <h2 id="testimonials-heading" class="font-display font-bold text-section text-ink mb-5 leading-tight">
+        Don't take<br/>
+        <span class="text-ink-muted">our word for it.</span>
+      </h2>
+      <p class="text-ink-muted leading-relaxed">
+        Here's what founders and product leaders say after shipping with us.
+      </p>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5" itemscope itemtype="https://schema.org/Organization">
+      <meta itemprop="name" content="Renix.dev" />
+      {testimonials.map((t, i) => (
+        <figure
+          class="card-glass flex flex-col gap-5 group relative overflow-hidden"
+          data-reveal
+          data-reveal-delay={String(i + 1)}
+          itemscope
+          itemtype="https://schema.org/Review"
+          itemprop="review"
+        >
+          <!-- Subtle corner glow -->
+          <div
+            class="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none"
+            style={`background: radial-gradient(ellipse, ${t.accent}, transparent);`}
+          ></div>
+
+          <!-- Stars -->
+          <div class="flex gap-1 relative z-10">
+            {Array.from({ length: 5 }).map(() => (
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path
+                  d="M6.5 1l1.5 3.2 3.5.5-2.5 2.4.6 3.4L6.5 9 3 10.5l.6-3.4L1 4.7l3.5-.5L6.5 1z"
+                  fill={t.accent}
+                  fill-opacity="0.7"
+                  stroke={t.accent}
+                  stroke-width="0.5"
+                />
+              </svg>
+            ))}
+          </div>
+
+          <!-- Quote -->
+          <blockquote class="font-body text-sm text-ink-muted leading-relaxed flex-1 relative z-10" itemprop="reviewBody">
+            "{t.quote}"
+          </blockquote>
+
+          <!-- Divider -->
+          <div class="h-px w-full" style={`background: linear-gradient(to right, ${t.accent}30, transparent);`}></div>
+
+          <!-- Author -->
+          <figcaption class="flex items-center gap-3 relative z-10" itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <div
+              class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-display font-bold text-xs"
+              style={`background: ${t.accent}18; border: 1px solid ${t.accent}35; color: ${t.accent};`}
+            >
+              {t.initials}
+            </div>
+            <div>
+              <div class="text-sm font-display font-semibold text-ink" itemprop="name">{t.name}</div>
+              <div class="text-xs text-ink-muted">{t.title} · {t.company}</div>
+            </div>
+          </figcaption>
+          <!-- Hidden rating for schema -->
+          <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" class="hidden" aria-hidden="true">
+            <meta itemprop="ratingValue" content="5" />
+            <meta itemprop="bestRating"  content="5" />
+          </div>
+        </figure>
+      ))}
+    </div>
+
+  </div>
+</section>

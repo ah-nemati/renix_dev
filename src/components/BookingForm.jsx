@@ -19,8 +19,10 @@ function BookingForm() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [form, setForm] = useState({ name: '', email: '', brief: '' });
+  const BRIEF_MAX = 500;
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState('');
 
   // Build calendar days
   const calendarDays = useMemo(() => {
@@ -86,6 +88,7 @@ function BookingForm() {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     setErrors({});
+    setApiError('');
     setStatus('loading');
 
     const payload = {
@@ -111,6 +114,7 @@ function BookingForm() {
       setStatus('success');
     } catch (err) {
       console.error('Booking error:', err);
+      setApiError(err instanceof Error ? err.message : 'Something went wrong.');
       setStatus('error');
     }
   };
@@ -178,14 +182,27 @@ function BookingForm() {
         </div>
 
         <div>
-          <label htmlFor="booking-brief" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest mb-2">Project Brief</label>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="booking-brief" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest">Project Brief</label>
+            <span className={`text-xs font-mono transition-colors ${
+              form.brief.length > BRIEF_MAX * 0.9
+                ? form.brief.length >= BRIEF_MAX ? 'text-red-400' : 'text-amber-400'
+                : 'text-[#2e3d56]'
+            }`}>
+              {form.brief.length}/{BRIEF_MAX}
+            </span>
+          </div>
           <textarea
             id="booking-brief"
             placeholder="Describe your idea, what you're trying to build, and what stage you're at..."
             value={form.brief}
-            onChange={e => setForm(f => ({ ...f, brief: e.target.value }))}
+            onChange={e => {
+              if (e.target.value.length <= BRIEF_MAX)
+                setForm(f => ({ ...f, brief: e.target.value }));
+            }}
             rows={5}
             className={inputClass('brief') + ' resize-none'}
+            maxLength={BRIEF_MAX}
           />
           {errors.brief && <p className="text-xs text-red-400 mt-1.5">{errors.brief}</p>}
         </div>
@@ -350,9 +367,15 @@ function BookingForm() {
         </button>
 
         {status === 'error' && (
-          <p className="text-xs text-red-400 text-center">
-            Something went wrong. Please email us directly at hello@renix.dev
-          </p>
+          <div className="rounded-xl px-4 py-3 text-center" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <p className="text-xs text-red-400 mb-1 font-medium">
+              {apiError || 'Something went wrong.'}
+            </p>
+            <p className="text-xs text-[#6b7a99]">
+              Email us directly at{' '}
+              <a href="mailto:hello@renix.dev" className="text-red-400/80 hover:text-red-400 underline underline-offset-2">hello@renix.dev</a>
+            </p>
+          </div>
         )}
       </div>
     </div>

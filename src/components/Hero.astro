@@ -1,121 +1,192 @@
 ---
 ---
 
-<section class="relative min-h-screen flex items-center overflow-hidden pt-16" aria-labelledby="hero-heading">
+<section
+  class="relative min-h-screen flex items-center overflow-hidden pt-16"
+  aria-labelledby="hero-heading"
+>
 
-  <!-- Background layers -->
+  <!-- ── Background layers ───────────────────────────────── -->
   <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100"></div>
   <div class="absolute inset-0 bg-hero-gradient"></div>
 
-  <!-- Ambient orbs -->
-  <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl animate-pulse-slow"
-       style="background: radial-gradient(circle, #4f7cff, transparent);">
-  </div>
-  <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-[8%] blur-3xl animate-pulse-slow"
-       style="background: radial-gradient(circle, #a855f7, transparent); animation-delay: 2s;">
-  </div>
+  <!-- Ambient orbs (pointer-events-none, aria-hidden) -->
+  <div
+    class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl animate-pulse-slow pointer-events-none"
+    style="background: radial-gradient(circle, #4f7cff, transparent);"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-[8%] blur-3xl animate-pulse-slow pointer-events-none"
+    style="background: radial-gradient(circle, #a855f7, transparent); animation-delay: 2s;"
+    aria-hidden="true"
+  ></div>
 
-  <!-- Scan line effect (subtle) -->
-  <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.02]">
+  <!-- Scan line (purely decorative) -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.02]" aria-hidden="true">
     <div class="w-full h-px bg-gradient-to-r from-transparent via-signal to-transparent animate-scan"></div>
   </div>
 
-  <div class="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
-    <div class="max-w-4xl">
+  <!-- ── Main content — TRUE 2-column grid on desktop ────── -->
+  <div class="relative w-full max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] gap-12 xl:gap-20 items-center">
 
-      <!-- Eyebrow -->
-      <div class="flex items-center gap-3 mb-8 animate-fade-in">
-        <div class="flex items-center gap-2 section-label">
-          <div class="glow-dot"></div>
-          <span>Available for new projects</span>
-        </div>
-      </div>
+      <!-- LEFT: Text content -->
+      <div>
 
-      <!-- Headline -->
-      <h1 id="hero-heading" class="font-display font-bold text-hero text-ink mb-6 leading-[1.05]">
-        We turn your
-        <span class="relative inline-block">
-          <span class="relative z-10 text-transparent bg-clip-text"
-                style="background-image: linear-gradient(135deg, #4f7cff 0%, #a855f7 50%, #00e5ff 100%);">
-            idea
-          </span>
-          <svg class="absolute -bottom-1 left-0 w-full" height="4" viewBox="0 0 200 4" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 2 Q50 0 100 2 Q150 4 200 2" stroke="url(#underline-grad)" stroke-width="2" fill="none"/>
-            <defs>
-              <linearGradient id="underline-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#4f7cff"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </span>
-        <br/>
-        into a product that
-        <br class="hidden sm:block"/>
-        <span class="text-ink-muted">ships.</span>
-      </h1>
-
-      <!-- Subheadline -->
-      <p class="font-body text-lg lg:text-xl text-ink-muted max-w-2xl mb-10 leading-relaxed">
-        Renix.dev builds custom web platforms, AI-powered tools, and cross-platform mobile apps
-        for founders and teams who need a technical partner — not just a vendor.
-      </p>
-
-      <!-- CTA row -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <a href="#booking" class="btn-primary text-base px-8 py-4">
-          <span>Book a Free Consultation</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="relative z-10" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-        <a href="#services" class="btn-ghost text-base">
-          See what we build
-        </a>
-      </div>
-
-      <!-- Social proof strip -->
-      <div class="mt-16 pt-8 border-t border-border/40 flex flex-wrap items-center gap-6">
-        <span class="text-xs font-mono text-ink-faint uppercase tracking-widest">Trusted by teams at</span>
-        <div class="flex items-center gap-6 flex-wrap">
-          {['Stealth AI Co.', 'NovaPay', 'HealthSync', 'TradeStack'].map((name) => (
-            <span class="text-sm font-display font-medium text-ink-muted/60 hover:text-ink-muted transition-colors">{name}</span>
-          ))}
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Floating code card — decorative -->
-    <div class="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 w-80 animate-float" aria-hidden="true">
-      <div class="card-glass font-mono text-xs leading-relaxed">
-        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-border/50">
-          <div class="flex gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-green-500/60"></div>
+        <!-- Eyebrow badge -->
+        <div class="flex items-center gap-3 mb-8 animate-fade-in">
+          <div class="flex items-center gap-2 section-label">
+            <div class="glow-dot"></div>
+            <span>Available for new projects</span>
           </div>
-          <span class="text-ink-faint text-xs">project.init</span>
         </div>
-        <div class="space-y-1.5">
-          <div><span class="text-ember">const</span> <span class="text-signal">idea</span> <span class="text-ink-muted">= {`{`}</span></div>
-          <div class="pl-4"><span class="text-accent-light">name</span><span class="text-ink-muted">: </span><span class="text-green-400">"Your vision"</span><span class="text-ink-muted">,</span></div>
-          <div class="pl-4"><span class="text-accent-light">status</span><span class="text-ink-muted">: </span><span class="text-green-400">"just an idea"</span></div>
-          <div class="text-ink-muted">{`}`}</div>
-          <div class="h-2"></div>
-          <div><span class="text-ember">await</span> <span class="text-signal">renix</span><span class="text-ink-muted">.</span><span class="text-accent">build</span><span class="text-ink-muted">(idea)</span></div>
-          <div class="h-2"></div>
-          <div class="text-ink-muted">// <span class="text-green-400">✓ Shipped to production</span></div>
-          <div class="text-ink-muted">// <span class="text-green-400">✓ Users are signing up</span></div>
-          <div class="text-ink-muted">// <span class="text-green-400">✓ You're growing</span></div>
+
+        <!-- H1 — Primary keyword in first 100 chars -->
+        <h1
+          id="hero-heading"
+          class="font-display font-bold text-hero text-ink mb-6 leading-[1.05]"
+        >
+          We turn your
+          <span class="relative inline-block">
+            <span
+              class="relative z-10 text-transparent bg-clip-text"
+              style="background-image: linear-gradient(135deg, #4f7cff 0%, #a855f7 50%, #00e5ff 100%);"
+            >idea</span>
+            <svg
+              class="absolute -bottom-1 left-0 w-full"
+              height="4"
+              viewBox="0 0 200 4"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d="M0 2 Q50 0 100 2 Q150 4 200 2" stroke="url(#underline-grad)" stroke-width="2" fill="none"/>
+              <defs>
+                <linearGradient id="underline-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%"   stop-color="#4f7cff"/>
+                  <stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+          <br/>
+          into a product that
+          <br class="hidden sm:block"/>
+          <span class="text-ink-muted">ships.</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="font-body text-lg lg:text-xl text-ink-muted max-w-xl mb-10 leading-relaxed">
+          Renix.dev builds custom web platforms, AI-powered tools, and cross-platform mobile apps
+          for founders and teams who need a technical partner — not just a vendor.
+        </p>
+
+        <!-- CTA row -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <a href="#booking" class="btn-primary text-base px-8 py-4">
+            <span>Book a Free Consultation</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="relative z-10" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#services" class="btn-ghost text-base">See what we build</a>
+        </div>
+
+        <!-- Social proof strip -->
+        <div class="mt-14 pt-8 border-t border-border/40 flex flex-wrap items-center gap-6">
+          <span class="text-xs font-mono text-ink-faint uppercase tracking-widest">Trusted by teams at</span>
+          <ul class="flex items-center gap-6 flex-wrap list-none" aria-label="Client companies">
+            {['Stealth AI Co.', 'NovaPay', 'HealthSync', 'TradeStack'].map((name) => (
+              <li>
+                <span class="text-sm font-display font-medium text-ink-muted/60 hover:text-ink-muted transition-colors">
+                  {name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Decorative code card — in its own grid column, never overlaps -->
+      <div class="hidden lg:flex justify-center items-center" aria-hidden="true">
+        <div class="w-full max-w-[340px] xl:max-w-[380px] animate-float" style="will-change: transform;">
+          <div class="card-glass font-mono text-xs leading-relaxed relative overflow-hidden">
+
+            <!-- Subtle glow inside card -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-2xl pointer-events-none opacity-20"
+                 style="background: radial-gradient(circle, #4f7cff, transparent);"></div>
+
+            <!-- Window chrome -->
+            <div class="flex items-center gap-2 mb-4 pb-3 border-b border-border/50 relative z-10">
+              <div class="flex gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500/60"></div>
+              </div>
+              <span class="text-ink-faint text-xs ml-1">project.init</span>
+            </div>
+
+            <!-- Code content -->
+            <div class="space-y-1.5 relative z-10">
+              <div>
+                <span class="text-ember">const</span>
+                <span class="text-signal"> idea</span>
+                <span class="text-ink-muted"> = {`{`}</span>
+              </div>
+              <div class="pl-4">
+                <span class="text-accent-light">name</span>
+                <span class="text-ink-muted">: </span>
+                <span class="text-green-400">"Your vision"</span>
+                <span class="text-ink-muted">,</span>
+              </div>
+              <div class="pl-4">
+                <span class="text-accent-light">status</span>
+                <span class="text-ink-muted">: </span>
+                <span class="text-green-400">"just an idea"</span>
+              </div>
+              <div class="text-ink-muted">{`}`}</div>
+              <div class="h-3"></div>
+              <div>
+                <span class="text-ember">await</span>
+                <span class="text-signal"> renix</span>
+                <span class="text-ink-muted">.</span>
+                <span class="text-accent">build</span>
+                <span class="text-ink-muted">(idea)</span>
+              </div>
+              <div class="h-3"></div>
+              <div class="text-ink-muted">
+                <span class="text-ink-faint">// </span>
+                <span class="text-green-400">✓ Shipped to production</span>
+              </div>
+              <div class="text-ink-muted">
+                <span class="text-ink-faint">// </span>
+                <span class="text-green-400">✓ Users are signing up</span>
+              </div>
+              <div class="text-ink-muted">
+                <span class="text-ink-faint">// </span>
+                <span class="text-green-400">✓ You're growing</span>
+              </div>
+            </div>
+
+            <!-- Simulated terminal cursor -->
+            <div class="mt-4 pt-3 border-t border-border/30 relative z-10">
+              <span class="text-ink-faint">❯ </span>
+              <span class="text-accent text-xs animate-pulse">▋</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
+    </div><!-- /grid -->
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce" aria-hidden="true">
+  <div
+    class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+    style="animation: bounce 2s ease-in-out infinite;"
+    aria-hidden="true"
+  >
     <span class="text-xs font-mono text-ink-faint">scroll</span>
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M8 3v10M4 9l4 4 4-4" stroke="#2e3d56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

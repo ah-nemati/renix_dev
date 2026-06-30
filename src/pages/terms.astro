@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config/seo';
+
+const lastUpdated = "2025-06-01";
+const lastUpdatedDisplay = "June 1, 2025";
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home',             item: SITE.url },
+    { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: `${SITE.url}/terms` },
+  ],
+};
+
+const webPageSchema = {
+  '@context':   'https://schema.org',
+  '@type':      'WebPage',
+  '@id':        `${SITE.url}/terms#webpage`,
+  url:          `${SITE.url}/terms`,
+  name:         'Terms of Service | Renix.dev',
+  description:  'Terms and conditions for using Renix.dev services and website.',
+  isPartOf:     { '@id': `${SITE.url}/#website` },
+  dateModified: lastUpdated,
+};
+---
+
+<Layout
+  title="Terms of Service | Renix.dev"
+  description="Terms and conditions for using Renix.dev services and website. Read our client commitments, IP ownership policy, and project engagement process."
+  canonical={`${SITE.url}/terms`}
+>
+  <script type="application/ld+json" slot="schema" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" slot="schema" set:html={JSON.stringify(webPageSchema)} />
+
+  <Navbar />
+  <main class="relative pt-32 pb-24">
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+    <div class="max-w-3xl mx-auto px-6 lg:px-8">
+      <div class="mb-12">
+        <nav aria-label="Breadcrumb" class="mb-6">
+          <ol class="flex items-center gap-2 text-xs text-ink-faint font-mono">
+            <li><a href="/" class="hover:text-ink-muted transition-colors">Home</a></li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" class="text-ink-muted">Terms of Service</li>
+          </ol>
+        </nav>
+        <div class="section-label mb-5">Legal</div>
+        <h1 class="font-display font-bold text-4xl md:text-5xl text-ink mb-4">Terms of Service</h1>
+        <p class="text-ink-muted text-sm font-mono">Last updated: <time datetime={lastUpdated}>{lastUpdatedDisplay}</time></p>
+      </div>
+
+      <div class="space-y-10">
+        <p class="text-ink-muted text-sm leading-relaxed">
+          These Terms of Service govern your use of the Renix.dev website and any engagement with our services. By accessing this site or using our services, you agree to these Terms.
+        </p>
+
+        <section aria-labelledby="terms-services">
+          <h2 id="terms-services" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">1. Services</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Renix.dev provides software development services including web application development, AI integrations, and mobile application development. Specific scope, deliverables, timeline, and pricing are set out in a separate written agreement for each engagement. These Terms apply in addition to any such agreement.</p>
+        </section>
+
+        <section aria-labelledby="terms-website">
+          <h2 id="terms-website" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">2. Website Use</h2>
+          <p class="text-ink-muted text-sm leading-relaxed mb-4">You may use this website for lawful purposes only. You agree not to:</p>
+          <ul class="space-y-2 text-ink-muted text-sm leading-relaxed">
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Use the site in any way that violates applicable laws or regulations</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Transmit unsolicited or unauthorised advertising or promotional material</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Attempt to gain unauthorised access to any part of the website or its infrastructure</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Engage in any conduct that could damage, disable, or impair the website</span></li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="terms-ip">
+          <h2 id="terms-ip" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">3. Intellectual Property</h2>
+          <p class="text-ink-muted text-sm leading-relaxed mb-4">All content on this website — including text, graphics, logos, and code — is the property of Renix.dev or its licensors. You may not reproduce, distribute, or create derivative works without our prior written consent.</p>
+          <p class="text-ink-muted text-sm leading-relaxed">IP ownership for client deliverables is governed by the individual service agreement. In the absence of an explicit agreement, all deliverables remain the property of Renix.dev until full payment has been received.</p>
+        </section>
+
+        <section aria-labelledby="terms-booking">
+          <h2 id="terms-booking" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">4. Booking and Consultations</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Submitting a booking request constitutes an expression of interest, not a binding contract. A formal engagement only begins when both parties have signed a written service agreement. We reserve the right to decline any engagement without explanation.</p>
+        </section>
+
+        <section aria-labelledby="terms-warranty">
+          <h2 id="terms-warranty" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">5. Disclaimer of Warranties</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">This website is provided "as is" without warranties of any kind, express or implied. We do not warrant that the website will be uninterrupted or error-free.</p>
+        </section>
+
+        <section aria-labelledby="terms-liability">
+          <h2 id="terms-liability" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">6. Limitation of Liability</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">To the maximum extent permitted by law, Renix.dev shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of this website or our services. Our total liability for any claim shall not exceed the amount paid for the specific service giving rise to the claim.</p>
+        </section>
+
+        <section aria-labelledby="terms-law">
+          <h2 id="terms-law" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">7. Governing Law</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">These Terms shall be governed by applicable law. Any disputes shall be subject to the exclusive jurisdiction of the courts in the jurisdiction where Renix.dev is incorporated.</p>
+        </section>
+
+        <section aria-labelledby="terms-changes">
+          <h2 id="terms-changes" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">8. Changes to These Terms</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">We reserve the right to modify these Terms at any time. Changes are effective immediately upon posting. Continued use of the website constitutes acceptance of the revised Terms.</p>
+        </section>
+
+        <section aria-labelledby="terms-contact">
+          <h2 id="terms-contact" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">9. Contact</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Questions? <a href="mailto:hello@renix.dev" class="text-accent hover:underline">hello@renix.dev</a></p>
+        </section>
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-border/40">
+        <a href="/" class="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7H2M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to home
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

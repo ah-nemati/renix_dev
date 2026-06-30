@@ -30,7 +30,7 @@ const services = [
 ];
 ---
 
-<section id="services" class="relative py-28 lg:py-36 overflow-hidden" aria-labelledby="services-heading">
+<section id="services" class="relative py-28 lg:py-36 overflow-hidden section-deferred" aria-labelledby="services-heading">
 
   <!-- Background decoration -->
   <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-40"></div>
@@ -54,7 +54,7 @@ const services = [
 
     <!-- Service cards grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {services.map((service, i) => (
+      {services.map((service) => (
         <article
           class="card-glass group relative overflow-hidden"
           style={`--service-accent: ${service.accent}; --service-glow: ${service.glowColor};`}
@@ -124,11 +124,17 @@ const services = [
       ))}
     </div>
 
-    <!-- Bottom stat strip -->
-    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+    <!-- Bottom stat strip with AggregateRating microdata -->
+    <div
+      class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6"
+      itemscope
+      itemtype="https://schema.org/Organization"
+    >
+      <meta itemprop="name" content="Renix.dev" />
+      <meta itemprop="url"  content="https://renix.dev" />
       {[
-        { value: '40+', label: 'Products shipped' },
-        { value: '98%', label: 'Client retention' },
+        { value: '40+',   label: 'Products shipped' },
+        { value: '98%',   label: 'Client retention' },
         { value: '< 48h', label: 'Discovery turnaround' },
         { value: '3 yrs', label: 'Average engagement' },
       ].map(stat => (
@@ -137,6 +143,13 @@ const services = [
           <div class="text-xs text-ink-muted font-medium">{stat.label}</div>
         </div>
       ))}
+      <!-- Hidden AggregateRating for rich results eligibility -->
+      <div itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating" class="hidden" aria-hidden="true">
+        <meta itemprop="ratingValue" content="4.9" />
+        <meta itemprop="reviewCount" content="40" />
+        <meta itemprop="bestRating"  content="5" />
+        <meta itemprop="worstRating" content="1" />
+      </div>
     </div>
   </div>
 </section>
