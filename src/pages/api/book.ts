@@ -1,6 +1,4 @@
-import type { APIRoute } from 'astro';
-
-export const prerender = false;
+import type { APIRoute } from "astro";
 
 /**
  * POST /api/book
@@ -14,17 +12,20 @@ export const POST: APIRoute = async ({ request }) => {
 
     // --- Basic server-side validation ---
     if (!name || !email || !brief || !date || !time) {
-      return new Response(JSON.stringify({ error: 'All fields are required.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: "All fields are required." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email address.' }), {
+      return new Response(JSON.stringify({ error: "Invalid email address." }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -45,20 +46,20 @@ export const POST: APIRoute = async ({ request }) => {
     //   html: `<p>Hi ${name}, we'll see you on ${date} at ${time} UTC.</p>`,
     // });
 
-    console.log('New booking received:', { name, email, date, time });
+    console.log("New booking received:", { name, email, date, time });
 
     return new Response(
-      JSON.stringify({ success: true, message: 'Booking confirmed.' }),
+      JSON.stringify({ success: true, message: "Booking confirmed." }),
       {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
   } catch (err) {
-    console.error('Booking error:', err);
-    return new Response(JSON.stringify({ error: 'Internal server error.' }), {
+    console.error("Booking error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error." }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
-}
+};
