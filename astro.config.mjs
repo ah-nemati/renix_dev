@@ -1,11 +1,14 @@
-// astro.config.mjs
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://renix.dev",
+
+  output: "server",
+  adapter: vercel(),
 
   integrations: [
     tailwind(),
@@ -18,7 +21,6 @@ export default defineConfig({
     }),
   ],
 
-  output: "static", // 👈 Change this or delete it entirely
   compressHTML: true,
 
   prefetch: {
