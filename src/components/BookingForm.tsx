@@ -1,10 +1,24 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { 
+  Calendar as CalendarIcon, 
+  Clock, 
+  CheckCircle, 
+  Send, 
+  Sparkles, 
+  Globe, 
+  Briefcase, 
+  DollarSign, 
+  ChevronLeft, 
+  ChevronRight,
+  AlertCircle,
+  Download
+} from "lucide-react";
+import confetti from "canvas-confetti";
 
 const TIME_SLOTS = [
   "09:00 AM",
   "10:00 AM",
   "11:00 AM",
-  "12:00 PM",
   "01:00 PM",
   "02:00 PM",
   "03:00 PM",
@@ -12,26 +26,35 @@ const TIME_SLOTS = [
   "05:00 PM",
 ];
 
+const SERVICES = [
+  "Web SaaS Platform",
+  "AI & RAG Pipeline",
+  "React Native Mobile App",
+  "Enterprise Suite",
+  "Code Audit / Consulting"
+];
+
+const BUDGETS = [
+  "< $10,000",
+  "$10,000 - $25,000",
+  "$25,000 - $50,000",
+  "$50,000+",
+  "Flexible"
+];
+
 const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
 type FormData = {
   name: string;
   email: string;
+  company: string;
+  service: string;
+  budget: string;
   brief: string;
 };
 
@@ -45,65 +68,67 @@ type FormErrors = {
 
 type Status = "idle" | "loading" | "success" | "error";
 
-function BookingForm() {
+export default function BookingForm() {
   const today = new Date();
 
   const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
-
   const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    // Default to 2 business days from now
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+    if (d.getDay() === 6) d.setDate(d.getDate() + 2);
+    return d;
+  });
+  const [selectedTime, setSelectedTime] = useState<string>("02:00 PM");
+  const [timezone, setTimezone] = useState<string>("UTC");
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  useEffect(() => {
+    try {
+      setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+    } catch {}
+  }, []);
 
   const [form, setForm] = useState<FormData>({
     name: "",
     email: "",
+    company: "",
+    service: "Web SaaS Platform",
+    budget: "$10,000 - $25,000",
     brief: "",
   });
 
-  const BRIEF_MAX = 500;
-
+  const BRIEF_MAX = 750;
   const [status, setStatus] = useState<Status>("idle");
-
   const [errors, setErrors] = useState<FormErrors>({});
-
   const [apiError, setApiError] = useState<string>("");
+  const [confirmedBookingId, setConfirmedBookingId] = useState<string | number>("");
 
   const calendarDays = useMemo<(number | null)[]>(() => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
     const days: (number | null)[] = [];
 
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
-
     for (let d = 1; d <= daysInMonth; d++) {
       days.push(d);
     }
-
     return days;
   }, [currentMonth, currentYear]);
 
   const isDateDisabled = (day: number | null): boolean => {
     if (!day) return true;
-
     const date = new Date(currentYear, currentMonth, day);
-
-    const isPast =
-      date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
+    const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-
     return isPast || isWeekend;
   };
 
   const isDateSelected = (day: number | null): boolean => {
     if (!day || !selectedDate) return false;
-
     return (
       selectedDate.getDate() === day &&
       selectedDate.getMonth() === currentMonth &&
@@ -113,7 +138,6 @@ function BookingForm() {
 
   const isToday = (day: number | null): boolean => {
     if (!day) return false;
-
     return (
       day === today.getDate() &&
       currentMonth === today.getMonth() &&
@@ -140,42 +164,27 @@ function BookingForm() {
   };
 
   const canGoPrev = (): boolean => {
-    return !(
-      currentMonth === today.getMonth() && currentYear === today.getFullYear()
-    );
+    return !(currentMonth === today.getMonth() && currentYear === today.getFullYear());
   };
 
   const validate = (): FormErrors => {
     const e: FormErrors = {};
-
-    if (!form.name.trim()) {
-      e.name = "Name is required";
-    }
-
+    if (!form.name.trim()) e.name = "Your name is required";
     if (!form.email.trim()) {
-      e.email = "Email is required";
+      e.email = "Email address is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       e.email = "Enter a valid email";
     }
-
-    if (!form.brief.trim()) {
-      e.brief = "Tell us a bit about your project";
+    if (!form.brief.trim() || form.brief.trim().length < 10) {
+      e.brief = "Please describe your project in at least 10 characters";
     }
-
-    if (!selectedDate) {
-      e.date = "Please pick a date";
-    }
-
-    if (!selectedTime) {
-      e.time = "Please pick a time slot";
-    }
-
+    if (!selectedDate) e.date = "Please pick a consultation date";
+    if (!selectedTime) e.time = "Please pick a time slot";
     return e;
   };
 
   const handleSubmit = async (): Promise<void> => {
     const validationErrors = validate();
-
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -188,244 +197,263 @@ function BookingForm() {
     const payload = {
       name: form.name,
       email: form.email,
+      company: form.company,
+      service: form.service,
+      budget: form.budget,
       brief: form.brief,
       date: selectedDate ? selectedDate.toISOString().split("T")[0] : undefined,
       time: selectedTime,
+      timezone: timezone,
     };
 
     try {
       const response = await fetch("/api/book", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const data: { error?: string } = await response.json();
+      const data = await response.json();
 
+      if (!response.ok) {
         throw new Error(data.error || "Booking failed");
       }
 
+      setConfirmedBookingId(data.booking?.id || "RNX-" + Math.floor(1000 + Math.random() * 9000));
       setStatus("success");
+
+      // Celebrate with confetti
+      try {
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.5 },
+          colors: ['#4f7cff', '#a855f7', '#00e5ff', '#4ade80']
+        });
+      } catch {}
     } catch (err: unknown) {
       console.error("Booking error:", err);
-
       setApiError(err instanceof Error ? err.message : "Something went wrong.");
-
       setStatus("error");
     }
+  };
+
+  const downloadCalendarFile = () => {
+    if (!selectedDate) return;
+    const dateStr = selectedDate.toISOString().split('T')[0].replace(/-/g, '');
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Renix.dev//Consultation//EN',
+      'BEGIN:VEVENT',
+      `SUMMARY:Renix.dev Technical Strategy Call with ${form.name}`,
+      `DESCRIPTION:Discovery and architecture consultation session for ${form.service}. Project brief: ${form.brief.slice(0, 100)}...`,
+      `DTSTART:${dateStr}T140000Z`,
+      `DTEND:${dateStr}T144500Z`,
+      'LOCATION:Google Meet / Zoom (link sent via email)',
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', `renix-consultation-${confirmedBookingId}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const inputClass = (field: keyof FormErrors): string =>
     `w-full px-4 py-3 rounded-xl text-sm text-[#e8edf7] border outline-none transition-all duration-200 placeholder-[#6b7a99] font-body ${
       errors[field]
-        ? "border-red-500/60 bg-[#1a0a0a] focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
-        : "border-[#1e2d45] bg-[#0c1120]/80 focus:border-[#4f7cff]/50 focus:shadow-[0_0_0_3px_rgba(79,124,255,0.1)]"
+        ? "border-red-500/70 bg-[#1a0a0a] focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]"
+        : "border-[#1e2d45] bg-[#070b14]/80 focus:border-[#4f7cff] focus:shadow-[0_0_0_3px_rgba(79,124,255,0.15)]"
     }`;
 
   if (status === "success") {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
           style={{
-            background: "rgba(79,124,255,0.1)",
-            border: "1px solid rgba(79,124,255,0.3)",
-            boxShadow: "0 0 40px rgba(79,124,255,0.2)",
+            background: "rgba(79,124,255,0.12)",
+            border: "1px solid rgba(79,124,255,0.4)",
+            boxShadow: "0 0 50px rgba(79,124,255,0.3)",
           }}
         >
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M6 16l7 7 13-13"
-              stroke="#4f7cff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <CheckCircle size={36} className="text-[#4ade80]" />
         </div>
 
-        <h3 className="font-display font-bold text-2xl text-[#e8edf7] mb-3">
-          You're booked.
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20 text-xs font-mono mb-4">
+          <span>Booking Reference: #{confirmedBookingId}</span>
+        </div>
+
+        <h3 className="font-display font-extrabold text-3xl text-white mb-3">
+          Your Call is Confirmed!
         </h3>
 
-        <p className="text-[#6b7a99] max-w-sm leading-relaxed mb-2">
-          We'll send a calendar invite to{" "}
-          <strong className="text-[#e8edf7]">{form.email}</strong> shortly.
+        <p className="text-[#94a3b8] max-w-md leading-relaxed mb-6">
+          We&apos;ve reserved your session on{" "}
+          <strong className="text-white">{selectedDate?.toDateString()}</strong> at{" "}
+          <strong className="text-[#00e5ff]">{selectedTime} ({timezone})</strong>.
+          Calendar invitation and video meeting link have been sent to{" "}
+          <strong className="text-white">{form.email}</strong>.
         </p>
 
-        <p className="text-[#6b7a99] text-sm">
-          Expect a confirmation within{" "}
-          <strong className="text-[#e8edf7]">2 hours</strong>.
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={downloadCalendarFile}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-display font-semibold text-xs text-white bg-[#1e2d45] hover:bg-[#283b5a] transition-all border border-[#4f7cff]/30"
+          >
+            <Download size={14} />
+            <span>Add to Calendar (.ics)</span>
+          </button>
 
-        <div
-          className="mt-8 px-6 py-3 rounded-xl font-mono text-xs text-[#6b7a99]"
-          style={{
-            background: "rgba(79,124,255,0.06)",
-            border: "1px solid rgba(79,124,255,0.12)",
-          }}
-        >
-          {selectedDate?.toDateString()} at {selectedTime}
+          <button
+            onClick={() => {
+              setStatus("idle");
+              setForm({ name: "", email: "", company: "", service: SERVICES[0], budget: BUDGETS[1], brief: "" });
+            }}
+            className="px-5 py-2.5 rounded-xl font-display text-xs text-[#6b7a99] hover:text-white transition-colors"
+          >
+            Book Another Session
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-      <div className="space-y-5">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+      
+      {/* Left Column: Form Details (7 cols) */}
+      <div className="lg:col-span-7 space-y-6">
+        
+        {/* Service Type Pills */}
         <div>
-          <label
-            htmlFor="booking-name"
-            className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest mb-2"
-          >
-            Your Name
+          <label className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider mb-2.5">
+            What do you want to build?
           </label>
-
-          <input
-            id="booking-name"
-            type="text"
-            placeholder="Alex Johnson"
-            value={form.name}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                name: e.target.value,
-              }))
-            }
-            className={inputClass("name")}
-          />
-
-          {errors.name && (
-            <p className="text-xs text-red-400 mt-1.5">{errors.name}</p>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {SERVICES.map(s => (
+              <button
+                type="button"
+                key={s}
+                onClick={() => setForm(f => ({ ...f, service: s }))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                  form.service === s
+                    ? 'bg-[#4f7cff] text-white font-medium shadow-[0_0_12px_rgba(79,124,255,0.35)]'
+                    : 'bg-[#070b14] text-[#6b7a99] border border-[#1e2d45] hover:text-[#e8edf7]'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="booking-email"
-            className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest mb-2"
-          >
-            Email Address
-          </label>
+        {/* Name & Email Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="booking-name" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider mb-2">
+              Your Name *
+            </label>
+            <input
+              id="booking-name"
+              type="text"
+              placeholder="e.g. Alex Vance"
+              value={form.name}
+              onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
+              className={inputClass("name")}
+            />
+            {errors.name && <p className="text-xs text-red-400 mt-1.5">{errors.name}</p>}
+          </div>
 
-          <input
-            id="booking-email"
-            type="email"
-            placeholder="alex@company.com"
-            value={form.email}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                email: e.target.value,
-              }))
-            }
-            className={inputClass("email")}
-          />
-
-          {errors.email && (
-            <p className="text-xs text-red-400 mt-1.5">{errors.email}</p>
-          )}
+          <div>
+            <label htmlFor="booking-email" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider mb-2">
+              Work Email *
+            </label>
+            <input
+              id="booking-email"
+              type="email"
+              placeholder="alex@company.com"
+              value={form.email}
+              onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
+              className={inputClass("email")}
+            />
+            {errors.email && <p className="text-xs text-red-400 mt-1.5">{errors.email}</p>}
+          </div>
         </div>
 
+        {/* Company & Budget Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="booking-company" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider mb-2">
+              Company / Organization (Optional)
+            </label>
+            <input
+              id="booking-company"
+              type="text"
+              placeholder="e.g. NovaPay Inc."
+              value={form.company}
+              onChange={(e) => setForm(f => ({ ...f, company: e.target.value }))}
+              className={inputClass("name")}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider mb-2">
+              Approximate Budget
+            </label>
+            <select
+              value={form.budget}
+              onChange={(e) => setForm(f => ({ ...f, budget: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl text-sm text-[#e8edf7] border border-[#1e2d45] bg-[#070b14]/80 outline-none focus:border-[#4f7cff] font-body"
+            >
+              {BUDGETS.map(b => (
+                <option key={b} value={b} className="bg-[#0b101e] text-[#e8edf7]">{b}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Project Brief */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label
-              htmlFor="booking-brief"
-              className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest"
-            >
-              Project Brief
+            <label htmlFor="booking-brief" className="block text-xs font-mono text-[#6b7a99] uppercase tracking-wider">
+              Project Overview & Goals *
             </label>
-
-            <span
-              className={`text-xs font-mono transition-colors ${
-                form.brief.length > BRIEF_MAX * 0.9
-                  ? form.brief.length >= BRIEF_MAX
-                    ? "text-red-400"
-                    : "text-amber-400"
-                  : "text-[#2e3d56]"
-              }`}
-            >
+            <span className="text-xs font-mono text-[#6b7a99]">
               {form.brief.length}/{BRIEF_MAX}
             </span>
           </div>
-
           <textarea
             id="booking-brief"
-            placeholder="Describe your idea, what you're trying to build, and what stage you're at..."
+            placeholder="Tell us about the product you want to build, timeline, and key requirements..."
             value={form.brief}
             onChange={(e) => {
               if (e.target.value.length <= BRIEF_MAX) {
-                setForm((f) => ({
-                  ...f,
-                  brief: e.target.value,
-                }));
+                setForm(f => ({ ...f, brief: e.target.value }));
               }
             }}
-            rows={5}
+            rows={4}
             className={`${inputClass("brief")} resize-none`}
             maxLength={BRIEF_MAX}
           />
-
-          {errors.brief && (
-            <p className="text-xs text-red-400 mt-1.5">{errors.brief}</p>
-          )}
+          {errors.brief && <p className="text-xs text-red-400 mt-1.5">{errors.brief}</p>}
         </div>
 
-        {(selectedDate || selectedTime) && (
-          <div
-            className="rounded-xl px-4 py-3 flex items-center gap-3"
-            style={{
-              background: "rgba(79,124,255,0.06)",
-              border: "1px solid rgba(79,124,255,0.15)",
-            }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              className="flex-shrink-0"
-            >
-              <rect
-                x="1"
-                y="2"
-                width="12"
-                height="11"
-                rx="1.5"
-                stroke="#4f7cff"
-                strokeWidth="1.2"
-              />
-
-              <path
-                d="M4 1v2M10 1v2M1 5h12"
-                stroke="#4f7cff"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-
-            <span className="text-xs font-mono text-[#7fa0ff]">
-              {selectedDate ? selectedDate.toDateString() : "—"}
-
-              {selectedTime ? ` · ${selectedTime}` : ""}
-            </span>
-          </div>
-        )}
       </div>
 
-      <div className="space-y-5">
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{
-            background: "rgba(12,17,32,0.8)",
-            border: "1px solid rgba(30,45,69,0.8)",
-          }}
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d45]/60">
+      {/* Right Column: Interactive Calendar & Slot Picker (5 cols) */}
+      <div className="lg:col-span-5 space-y-6">
+        
+        {/* Calendar Picker Box */}
+        <div className="rounded-2xl border border-[#1e2d45] bg-[#070b14]/90 p-4 sm:p-5">
+          
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#1e2d45]/60">
             <button
               type="button"
               onClick={prevMonth}
@@ -433,15 +461,7 @@ function BookingForm() {
               className="p-1.5 rounded-lg text-[#6b7a99] hover:text-[#e8edf7] hover:bg-[#1e2d45]/60 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Previous month"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M10 3L5 8l5 5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ChevronLeft size={16} />
             </button>
 
             <h4 className="font-display font-semibold text-sm text-[#e8edf7]">
@@ -454,238 +474,122 @@ function BookingForm() {
               className="p-1.5 rounded-lg text-[#6b7a99] hover:text-[#e8edf7] hover:bg-[#1e2d45]/60 transition-all"
               aria-label="Next month"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M6 3l5 5-5 5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ChevronRight size={16} />
             </button>
           </div>
 
-          <div className="grid grid-cols-7 px-3 pt-3">
-            {DAYS_OF_WEEK.map((day) => (
-              <div
-                key={day}
-                className="text-center text-[10px] font-mono text-[#2e3d56] uppercase tracking-widest py-1.5"
-              >
+          <div className="grid grid-cols-7 text-center mb-1">
+            {DAYS_OF_WEEK.map(day => (
+              <div key={day} className="text-[10px] font-mono text-[#6b7a99] uppercase py-1">
                 {day}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 px-3 pb-4 gap-y-1">
+          <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, idx) => {
               const disabled = isDateDisabled(day);
               const selected = isDateSelected(day);
               const todayHighlight = isToday(day);
 
               return (
-                <div
-                  key={idx}
-                  className="flex items-center justify-center py-0.5"
-                >
+                <div key={idx} className="flex items-center justify-center">
                   {day ? (
                     <button
                       type="button"
                       onClick={() => {
                         if (!disabled) {
-                          setSelectedDate(
-                            new Date(currentYear, currentMonth, day),
-                          );
-
-                          setErrors((e) => ({
-                            ...e,
-                            date: undefined,
-                          }));
+                          setSelectedDate(new Date(currentYear, currentMonth, day));
+                          setErrors(e => ({ ...e, date: undefined }));
                         }
                       }}
                       disabled={disabled}
-                      className={`w-9 h-9 rounded-xl text-sm font-medium transition-all duration-150 ${
+                      className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
                         selected
-                          ? "text-white font-semibold"
+                          ? "bg-[#4f7cff] text-white font-bold shadow-[0_0_12px_rgba(79,124,255,0.5)]"
                           : disabled
-                            ? "text-[#2e3d56] cursor-not-allowed"
-                            : todayHighlight
-                              ? "text-[#4f7cff] border border-[#4f7cff]/30 hover:bg-[#4f7cff]/10"
-                              : "text-[#6b7a99] hover:text-[#e8edf7] hover:bg-[#1e2d45]/60"
+                          ? "text-[#1e2d45] cursor-not-allowed"
+                          : todayHighlight
+                          ? "text-[#00e5ff] border border-[#00e5ff]/40 bg-[#00e5ff]/5"
+                          : "text-[#94a3b8] hover:text-white hover:bg-[#1e2d45]/60"
                       }`}
-                      style={
-                        selected
-                          ? {
-                              background:
-                                "linear-gradient(135deg, #4f7cff, #6b5ce7)",
-                              boxShadow: "0 0 16px rgba(79,124,255,0.4)",
-                            }
-                          : {}
-                      }
-                      aria-label={`${MONTHS[currentMonth]} ${day}, ${currentYear}`}
-                      aria-pressed={selected}
                     >
                       {day}
                     </button>
                   ) : (
-                    <div className="w-9 h-9" />
+                    <div className="w-8 h-8" />
                   )}
                 </div>
               );
             })}
           </div>
+
+          {errors.date && <p className="text-xs text-red-400 mt-2">{errors.date}</p>}
         </div>
 
-        {errors.date && (
-          <p className="text-xs text-red-400 -mt-3">{errors.date}</p>
-        )}
-
+        {/* Time Slot Picker */}
         <div>
-          <label className="block text-xs font-mono text-[#6b7a99] uppercase tracking-widest mb-3">
-            Preferred Time (UTC)
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-mono text-[#6b7a99] uppercase tracking-wider">
+              Preferred Time Slot
+            </label>
+            <span className="text-[11px] font-mono text-[#7fa0ff]">
+              Zone: {timezone}
+            </span>
+          </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            {TIME_SLOTS.map((slot) => (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {TIME_SLOTS.map(slot => (
               <button
                 type="button"
                 key={slot}
                 onClick={() => {
                   setSelectedTime(slot);
-
-                  setErrors((e) => ({
-                    ...e,
-                    time: undefined,
-                  }));
+                  setErrors(e => ({ ...e, time: undefined }));
                 }}
-                className={`py-2.5 px-2 rounded-xl text-xs font-mono transition-all duration-150 ${
+                className={`py-2 px-2 rounded-xl text-xs font-mono transition-all text-center ${
                   selectedTime === slot
-                    ? "text-white font-semibold"
-                    : "text-[#6b7a99] hover:text-[#e8edf7] hover:border-[#4f7cff]/30"
+                    ? "bg-gradient-to-r from-[#4f7cff] to-[#a855f7] text-white font-bold shadow-[0_0_12px_rgba(79,124,255,0.4)] border border-transparent"
+                    : "bg-[#070b14] text-[#6b7a99] border border-[#1e2d45] hover:text-white hover:border-[#4f7cff]/40"
                 }`}
-                style={
-                  selectedTime === slot
-                    ? {
-                        background: "linear-gradient(135deg, #4f7cff, #6b5ce7)",
-                        border: "1px solid rgba(79,124,255,0.4)",
-                        boxShadow: "0 0 12px rgba(79,124,255,0.3)",
-                      }
-                    : {
-                        background: "rgba(12,17,32,0.6)",
-                        border: "1px solid rgba(30,45,69,0.8)",
-                      }
-                }
-                aria-pressed={selectedTime === slot}
               >
                 {slot}
               </button>
             ))}
           </div>
-
-          {errors.time && (
-            <p className="text-xs text-red-400 mt-2">{errors.time}</p>
-          )}
+          {errors.time && <p className="text-xs text-red-400 mt-1.5">{errors.time}</p>}
         </div>
 
+        {/* Submit Button */}
         <button
           type="button"
           onClick={handleSubmit}
           disabled={status === "loading"}
-          className="w-full relative flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl font-display font-semibold text-sm text-white overflow-hidden transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
-          style={{
-            background: "linear-gradient(135deg, #4f7cff, #6b5ce7)",
-            boxShadow:
-              "0 0 0 1px rgba(79,124,255,0.4), 0 4px 24px rgba(79,124,255,0.3)",
-          }}
-          aria-label="Book consultation"
+          className="w-full py-4 px-6 rounded-xl font-display font-bold text-sm text-white flex items-center justify-center gap-2.5 transition-all duration-300 shadow-[0_0_30px_rgba(79,124,255,0.4)] hover:shadow-[0_0_45px_rgba(79,124,255,0.6)] hover:-translate-y-0.5 disabled:opacity-50"
+          style={{ background: 'linear-gradient(135deg, #4f7cff 0%, #a855f7 100%)' }}
         >
           {status === "loading" ? (
             <>
-              <svg
-                className="animate-spin"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-              >
-                <circle
-                  cx="8"
-                  cy="8"
-                  r="6"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeOpacity="0.3"
-                />
-
-                <path
-                  d="M8 2a6 6 0 016 6"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-
-              <span>Booking your call...</span>
+              <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+              <span>Securing your slot in Neon DB...</span>
             </>
           ) : (
             <>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect
-                  x="2"
-                  y="3"
-                  width="12"
-                  height="11"
-                  rx="1.5"
-                  stroke="white"
-                  strokeWidth="1.2"
-                />
-
-                <path
-                  d="M5 2v2M11 2v2M2 6h12"
-                  stroke="white"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-
-                <path
-                  d="M5 9h6M5 11.5h3.5"
-                  stroke="white"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-              </svg>
-
-              <span>Confirm Free Consultation</span>
+              <Sparkles size={16} />
+              <span>Confirm Free 45-Min Strategy Call</span>
             </>
           )}
         </button>
 
         {status === "error" && (
-          <div
-            className="rounded-xl px-4 py-3 text-center"
-            style={{
-              background: "rgba(239,68,68,0.06)",
-              border: "1px solid rgba(239,68,68,0.2)",
-            }}
-          >
-            <p className="text-xs text-red-400 mb-1 font-medium">
-              {apiError || "Something went wrong."}
-            </p>
-
-            <p className="text-xs text-[#6b7a99]">
-              Email us directly at{" "}
-              <a
-                href="mailto:hello@renix.dev"
-                className="text-red-400/80 hover:text-red-400 underline underline-offset-2"
-              >
-                hello@renix.dev
-              </a>
-            </p>
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-center gap-2">
+            <AlertCircle size={15} className="flex-shrink-0" />
+            <span>{apiError || "Failed to book. Please try again."}</span>
           </div>
         )}
+
       </div>
+
     </div>
   );
 }
-
-export default BookingForm;

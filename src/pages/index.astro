@@ -3,17 +3,18 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import Services from '../components/Services.astro';
+import CaseStudies from '../components/CaseStudies.astro';
+import Estimator from '../components/Estimator.astro';
+import TechStack from '../components/TechStack.astro';
 import Process from '../components/Process.astro';
 import Testimonials from '../components/Testimonials.astro';
 import FAQ from '../components/FAQ.astro';
+import Newsletter from '../components/Newsletter.astro';
 import Booking from '../components/Booking.astro';
 import Footer from '../components/Footer.astro';
 import { SITE } from '../config/seo';
-import { FAQ_ITEMS } from '../data/faq';
 
-// ── Page-level JSON-LD ────────────────────────────────────────────
-
-// Services schema (ItemList of Service offers)
+// ── Page-level JSON-LD Schemas ────────────────────────────────────
 const servicesSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
@@ -25,8 +26,8 @@ const servicesSchema = {
       item: {
         '@type': 'Service',
         '@id': `${SITE.url}/#service-web`,
-        name: 'Web Development',
-        description: 'Full-stack web applications with modern frameworks. From SaaS dashboards to e-commerce platforms — we ship fast, then iterate faster.',
+        name: 'Web Application Development',
+        description: 'Full-stack web applications with Next.js, Astro, and Neon Serverless PostgreSQL.',
         provider: { '@id': `${SITE.url}/#organisation` },
         areaServed: 'Worldwide',
         url: `${SITE.url}/#services`,
@@ -39,8 +40,8 @@ const servicesSchema = {
       item: {
         '@type': 'Service',
         '@id': `${SITE.url}/#service-ai`,
-        name: 'AI & Automation',
-        description: 'LLM integrations, RAG pipelines, custom AI agents, and computer vision — we build AI features that actually improve your product.',
+        name: 'AI & Automation Solutions',
+        description: 'LLM integrations, RAG pipelines, custom AI agents with pgvector embeddings.',
         provider: { '@id': `${SITE.url}/#organisation` },
         areaServed: 'Worldwide',
         url: `${SITE.url}/#services`,
@@ -53,8 +54,8 @@ const servicesSchema = {
       item: {
         '@type': 'Service',
         '@id': `${SITE.url}/#service-mobile`,
-        name: 'Mobile App Development',
-        description: 'Cross-platform iOS and Android apps with React Native. Native performance, smooth UX, and a single team maintaining it all.',
+        name: 'React Native Mobile Apps',
+        description: 'Cross-platform native iOS and Android apps with 60 FPS performance and offline sync.',
         provider: { '@id': `${SITE.url}/#organisation` },
         areaServed: 'Worldwide',
         url: `${SITE.url}/#services`,
@@ -64,7 +65,6 @@ const servicesSchema = {
   ],
 };
 
-// WebPage schema for the homepage
 const webPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
@@ -74,35 +74,25 @@ const webPageSchema = {
   description: SITE.description,
   isPartOf: { '@id': `${SITE.url}/#website` },
   about: { '@id': `${SITE.url}/#organisation` },
-  breadcrumb: {
-    '@type': 'BreadcrumbList',
-    itemListElement: [{
-      '@type': 'ListItem',
-      position: 1,
-      name: 'Home',
-      item: SITE.url,
-    }],
-  },
 };
 ---
 
 <Layout
-  title="Renix.dev — Software Development Agency | Web, AI & Mobile"
-  description="Renix.dev builds web apps, AI integrations, and React Native mobile apps for startups and scale-ups. Fixed-scope projects. On-time delivery. Full IP ownership."
+  title="Renix.dev — High-Performance Software Development & AI Agency"
+  description="We engineer full-stack SaaS platforms, custom AI/RAG copilot agents, and React Native mobile applications backed by Neon Serverless PostgreSQL."
   keywords={[
     'software development agency',
+    'Neon postgres backend',
     'web app development',
     'AI development company',
     'React Native agency',
-    'SaaS development',
-    'MVP development agency',
-    'hire software developers',
-    'startup development agency',
-    'custom software development',
+    'SaaS MVP development',
+    'hire fullstack developers',
+    'custom software agency',
     'Next.js development agency',
+    'RAG pipeline engineering'
   ]}
 >
-  <!-- Page-level JSON-LD injected into Layout's <slot name="schema"> -->
   <script type="application/ld+json" slot="schema" set:html={JSON.stringify(servicesSchema)} />
   <script type="application/ld+json" slot="schema" set:html={JSON.stringify(webPageSchema)} />
 
@@ -110,14 +100,18 @@ const webPageSchema = {
   <main>
     <Hero />
     <Services />
+    <CaseStudies />
+    <Estimator />
+    <TechStack />
     <Process />
     <Testimonials />
     <FAQ />
+    <Newsletter />
     <Booking />
   </main>
   <Footer />
 
-  <!-- Scroll reveal -->
+  <!-- Scroll reveal animations -->
   <script>
     const observer = new IntersectionObserver(
       (entries) => {
@@ -128,7 +122,7 @@ const webPageSchema = {
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
     document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
   </script>
@@ -136,16 +130,13 @@ const webPageSchema = {
   <style is:global>
     [data-reveal] {
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
     [data-reveal-delay="1"] { transition-delay: 0.1s; }
     [data-reveal-delay="2"] { transition-delay: 0.2s; }
     [data-reveal-delay="3"] { transition-delay: 0.3s; }
     [data-reveal-delay="4"] { transition-delay: 0.4s; }
-    [data-reveal-delay="5"] { transition-delay: 0.5s; }
-    [data-reveal-delay="6"] { transition-delay: 0.6s; }
-    [data-reveal-delay="7"] { transition-delay: 0.7s; }
   </style>
 </Layout>
