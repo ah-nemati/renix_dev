@@ -1,13 +1,24 @@
 import type { APIRoute } from "astro";
-import { getBookings, getDbHealth } from "../../../lib/db";
+import { getBookings, getDbHealth, getEstimates, getSubscribers } from "../../../lib/db";
+import { verifyAdminAuth } from "../../../lib/auth";
 
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const [bookings, health] = await Promise.all([
+    const auth = await verifyAdminAuth(request);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.error || "Unauthorized access." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const [bookings, health, estimates, subscribers] = await Promise.all([
       getBookings(),
       getDbHealth(),
+      getEstimates(),
+      getSubscribers(),
     ]);
 
     const total = bookings.length;
@@ -34,7 +45,10 @@ export const GET: APIRoute = async () => {
           cancelledBookings: cancelled,
           conversionRate: total > 0 ? Math.round(((confirmed + completed) / total) * 100) : 0,
           serviceCounts,
+          totalEstimates: estimates.length,
+          totalSubscribers: subscribers.length,
           databaseStatus: health,
+          user: auth.user,
         },
       }),
       {

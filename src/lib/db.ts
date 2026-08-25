@@ -32,6 +32,25 @@ export interface EstimateRecord {
 export interface SubscriberRecord {
   id: number | string;
   email: string;
+  status?: string;
+  created_at: string;
+}
+
+export interface ContactMessageRecord {
+  id: number | string;
+  name?: string;
+  email: string;
+  subject?: string;
+  message: string;
+  status?: string;
+  created_at: string;
+}
+
+export interface ActivityLogRecord {
+  id: number | string;
+  user_id?: number | null;
+  action: string;
+  details?: any;
   created_at: string;
 }
 
@@ -84,13 +103,28 @@ const memoryStore = {
       created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
     }
   ] as BookingRecord[],
-  estimates: [] as EstimateRecord[],
+  estimates: [
+    {
+      id: 1,
+      project_type: "Full-Stack Web App",
+      platforms: ["Web App", "Admin Dashboard"],
+      features: ["Custom Authentication & RBAC", "Real-Time WebSocket Engine", "Stripe / LemonSqueezy Payments"],
+      timeline_weeks: 6,
+      min_cost: 14000,
+      max_cost: 22000,
+      contact_email: "cto@fintechflow.io",
+      status: "in_review",
+      created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+    }
+  ] as EstimateRecord[],
   subscribers: [
-    { id: 1, email: "dev-insights@techfounder.com", created_at: new Date().toISOString() }
+    { id: 1, email: "dev-insights@techfounder.com", status: "active", created_at: new Date().toISOString() },
+    { id: 2, email: "sarah.dev@cloudpulse.io", status: "active", created_at: new Date(Date.now() - 86400000 * 2).toISOString() }
   ] as SubscriberRecord[],
+  activityLogs: [] as ActivityLogRecord[],
 };
 
-function getDatabaseUrl(): string | undefined {
+export function getDatabaseUrl(): string | undefined {
   if (typeof process !== 'undefined' && process.env?.DATABASE_URL) {
     return process.env.DATABASE_URL;
   }
@@ -104,6 +138,9 @@ function getDatabaseUrl(): string | undefined {
 
 let isInitialized = false;
 
+/**
+ * Initialize all database tables and indexes in Neon PostgreSQL
+ */
 export async function initDb(): Promise<{ isConnected: boolean; error?: string }> {
   const databaseUrl = getDatabaseUrl();
 
@@ -118,7 +155,35 @@ export async function initDb(): Promise<{ isConnected: boolean; error?: string }
   try {
     const sql = neon(databaseUrl);
 
-    // Initialize tables
+    // 1. Users Table (Admin & Team Authentication)
+    await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        password_salt TEXT NOT NULL,
+        name VARCHAR(255) NOT NULL DEFAULT 'Admin',
+        role VARCHAR(50) NOT NULL DEFAULT 'admin',
+        last_login_at TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+
+    // 2. Auth Sessions Table
+    await sql`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        user_agent TEXT,
+        ip_address TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+
+    // 3. Consultation Bookings Table
     await sql`
       CREATE TABLE IF NOT EXISTS bookings (
         id SERIAL PRIMARY KEY,
@@ -133,33 +198,38 @@ export async function initDb(): Promise<{ isConnected: boolean; error?: string }
         timezone TEXT DEFAULT 'UTC',
         status VARCHAR(20) DEFAULT 'pending',
         admin_notes TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
 
+    // 4. Project Estimates Table
     await sql`
       CREATE TABLE IF NOT EXISTS estimates (
         id SERIAL PRIMARY KEY,
         project_type TEXT NOT NULL,
-        platforms TEXT[],
-        features TEXT[],
-        timeline_weeks INT,
-        min_cost INT,
-        max_cost INT,
+        platforms TEXT[] NOT NULL,
+        features TEXT[] NOT NULL,
+        timeline_weeks INT DEFAULT 4,
+        min_cost INT DEFAULT 0,
+        max_cost INT DEFAULT 0,
         contact_email TEXT,
         status VARCHAR(20) DEFAULT 'new',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
 
+    // 5. Newsletter Subscribers Table
     await sql`
       CREATE TABLE IF NOT EXISTS newsletter_subscribers (
         id SERIAL PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
+        status VARCHAR(20) DEFAULT 'active',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
 
+    // 6. Contact Messages Table
     await sql`
       CREATE TABLE IF NOT EXISTS contact_messages (
         id SERIAL PRIMARY KEY,
@@ -167,9 +237,29 @@ export async function initDb(): Promise<{ isConnected: boolean; error?: string }
         email TEXT NOT NULL,
         subject TEXT,
         message TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'unread',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
+
+    // 7. Activity Logs Table
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        action VARCHAR(100) NOT NULL,
+        details JSONB,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+
+    // Performance Indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(LOWER(email));`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_bookings_created ON bookings(created_at DESC);`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_estimates_created ON estimates(created_at DESC);`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(LOWER(email));`;
 
     isInitialized = true;
     return { isConnected: true };
@@ -178,6 +268,8 @@ export async function initDb(): Promise<{ isConnected: boolean; error?: string }
     return { isConnected: false, error: err?.message || 'Database connection failed' };
   }
 }
+
+// ==================== Bookings Management ====================
 
 export async function createBooking(data: {
   name: string;
@@ -313,7 +405,8 @@ export async function updateBookingStatus(
       const rows = await sql`
         UPDATE bookings
         SET status = ${status},
-            admin_notes = COALESCE(${adminNotes ?? null}, admin_notes)
+            admin_notes = COALESCE(${adminNotes ?? null}, admin_notes),
+            updated_at = NOW()
         WHERE id = ${Number(id)}
         RETURNING id, name, email, company, service, budget, brief, booking_date::text, booking_time, timezone, status, admin_notes, created_at::text;
       `;
@@ -355,6 +448,8 @@ export async function deleteBooking(id: number | string): Promise<boolean> {
   memoryStore.bookings = memoryStore.bookings.filter(b => String(b.id) !== String(id));
   return memoryStore.bookings.length < prevLen;
 }
+
+// ==================== Estimates Management ====================
 
 export async function saveEstimate(data: {
   project_type: string;
@@ -400,6 +495,48 @@ export async function saveEstimate(data: {
   return newEst;
 }
 
+export async function getEstimates(): Promise<EstimateRecord[]> {
+  const databaseUrl = getDatabaseUrl();
+
+  if (databaseUrl && databaseUrl.trim() !== '') {
+    try {
+      await initDb();
+      const sql = neon(databaseUrl);
+      const rows = await sql`
+        SELECT id, project_type, platforms, features, timeline_weeks, min_cost, max_cost, contact_email, status, created_at::text
+        FROM estimates
+        ORDER BY created_at DESC;
+      `;
+      return rows as EstimateRecord[];
+    } catch (err) {
+      console.error('Neon DB getEstimates error:', err);
+    }
+  }
+
+  return memoryStore.estimates;
+}
+
+export async function deleteEstimate(id: number | string): Promise<boolean> {
+  const databaseUrl = getDatabaseUrl();
+
+  if (databaseUrl && databaseUrl.trim() !== '') {
+    try {
+      await initDb();
+      const sql = neon(databaseUrl);
+      await sql`DELETE FROM estimates WHERE id = ${Number(id)};`;
+      return true;
+    } catch (err) {
+      console.error('Neon DB delete estimate error:', err);
+    }
+  }
+
+  const prevLen = memoryStore.estimates.length;
+  memoryStore.estimates = memoryStore.estimates.filter(e => String(e.id) !== String(id));
+  return memoryStore.estimates.length < prevLen;
+}
+
+// ==================== Newsletter Subscribers ====================
+
 export async function saveSubscriber(email: string): Promise<{ success: boolean; message: string }> {
   const databaseUrl = getDatabaseUrl();
 
@@ -420,10 +557,52 @@ export async function saveSubscriber(email: string): Promise<{ success: boolean;
   }
 
   if (!memoryStore.subscribers.some(s => s.email === email)) {
-    memoryStore.subscribers.unshift({ id: Date.now(), email, created_at: new Date().toISOString() });
+    memoryStore.subscribers.unshift({ id: Date.now(), email, status: 'active', created_at: new Date().toISOString() });
   }
   return { success: true, message: 'Subscribed successfully (local mode).' };
 }
+
+export async function getSubscribers(): Promise<SubscriberRecord[]> {
+  const databaseUrl = getDatabaseUrl();
+
+  if (databaseUrl && databaseUrl.trim() !== '') {
+    try {
+      await initDb();
+      const sql = neon(databaseUrl);
+      const rows = await sql`
+        SELECT id, email, status, created_at::text
+        FROM newsletter_subscribers
+        ORDER BY created_at DESC;
+      `;
+      return rows as SubscriberRecord[];
+    } catch (err) {
+      console.error('Neon DB getSubscribers error:', err);
+    }
+  }
+
+  return memoryStore.subscribers;
+}
+
+export async function deleteSubscriber(id: number | string): Promise<boolean> {
+  const databaseUrl = getDatabaseUrl();
+
+  if (databaseUrl && databaseUrl.trim() !== '') {
+    try {
+      await initDb();
+      const sql = neon(databaseUrl);
+      await sql`DELETE FROM newsletter_subscribers WHERE id = ${Number(id)};`;
+      return true;
+    } catch (err) {
+      console.error('Neon DB delete subscriber error:', err);
+    }
+  }
+
+  const prevLen = memoryStore.subscribers.length;
+  memoryStore.subscribers = memoryStore.subscribers.filter(s => String(s.id) !== String(id));
+  return memoryStore.subscribers.length < prevLen;
+}
+
+// ==================== Health & Diagnostics ====================
 
 export async function getDbHealth(): Promise<{
   connected: boolean;
@@ -432,16 +611,20 @@ export async function getDbHealth(): Promise<{
   totalBookings: number;
   totalEstimates: number;
   totalSubscribers: number;
+  totalUsers?: number;
+  activeSessions?: number;
   databaseHost?: string;
+  pgVersion?: string;
   error?: string;
 }> {
   const databaseUrl = getDatabaseUrl();
 
   if (databaseUrl && databaseUrl.trim() !== '') {
     try {
+      await initDb();
       const startTime = Date.now();
       const sql = neon(databaseUrl);
-      const ping = await sql`SELECT 1 as ping, current_database() as db_name, NOW() as server_time;`;
+      const ping = await sql`SELECT 1 as ping, current_database() as db_name, version() as pg_version, NOW() as server_time;`;
       const latencyMs = Date.now() - startTime;
 
       let host = 'ep-***.neon.tech';
@@ -450,18 +633,25 @@ export async function getDbHealth(): Promise<{
         host = u.host;
       } catch {}
 
-      const bCount = await sql`SELECT COUNT(*) as count FROM bookings;`;
-      const eCount = await sql`SELECT COUNT(*) as count FROM estimates;`;
-      const sCount = await sql`SELECT COUNT(*) as count FROM newsletter_subscribers;`;
+      const [bCount, eCount, sCount, uCount, sessCount] = await Promise.all([
+        sql`SELECT COUNT(*) as count FROM bookings;`,
+        sql`SELECT COUNT(*) as count FROM estimates;`,
+        sql`SELECT COUNT(*) as count FROM newsletter_subscribers;`,
+        sql`SELECT COUNT(*) as count FROM users;`,
+        sql`SELECT COUNT(*) as count FROM sessions WHERE expires_at > NOW();`,
+      ]);
 
       return {
         connected: true,
         driver: 'Neon Serverless Postgres',
         latencyMs,
         databaseHost: host,
+        pgVersion: ping[0]?.pg_version?.split(' ')?.[1] || '18.x',
         totalBookings: Number(bCount[0]?.count || 0),
         totalEstimates: Number(eCount[0]?.count || 0),
         totalSubscribers: Number(sCount[0]?.count || 0),
+        totalUsers: Number(uCount[0]?.count || 0),
+        activeSessions: Number(sessCount[0]?.count || 0),
       };
     } catch (err: any) {
       return {
@@ -482,5 +672,7 @@ export async function getDbHealth(): Promise<{
     totalBookings: memoryStore.bookings.length,
     totalEstimates: memoryStore.estimates.length,
     totalSubscribers: memoryStore.subscribers.length,
+    totalUsers: 1,
+    activeSessions: 1,
   };
 }

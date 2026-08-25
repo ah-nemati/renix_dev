@@ -1,11 +1,20 @@
 import type { APIRoute } from "astro";
 import { getBookings, updateBookingStatus, deleteBooking } from "../../../lib/db";
+import { verifyAdminAuth } from "../../../lib/auth";
 
 export const prerender = false;
 
 // GET /api/admin/bookings?status=all&search=alex
 export const GET: APIRoute = async ({ request }) => {
   try {
+    const auth = await verifyAdminAuth(request);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.error || "Unauthorized access." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const url = new URL(request.url);
     const status = url.searchParams.get("status") || "all";
     const search = url.searchParams.get("search") || "";
@@ -27,6 +36,14 @@ export const GET: APIRoute = async ({ request }) => {
 // PATCH /api/admin/bookings
 export const PATCH: APIRoute = async ({ request }) => {
   try {
+    const auth = await verifyAdminAuth(request);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.error || "Unauthorized access." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const body = await request.json();
     const { id, status, admin_notes } = body;
 
@@ -60,6 +77,14 @@ export const PATCH: APIRoute = async ({ request }) => {
 // DELETE /api/admin/bookings
 export const DELETE: APIRoute = async ({ request }) => {
   try {
+    const auth = await verifyAdminAuth(request);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.error || "Unauthorized access." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
