@@ -1,0 +1,130 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config/seo';
+
+const lastUpdated = "2025-06-01";
+const lastUpdatedDisplay = "June 1, 2025";
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home',           item: SITE.url },
+    { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: `${SITE.url}/privacy` },
+  ],
+};
+
+const webPageSchema = {
+  '@context':   'https://schema.org',
+  '@type':      'WebPage',
+  '@id':        `${SITE.url}/privacy#webpage`,
+  url:          `${SITE.url}/privacy`,
+  name:         'Privacy Policy | Renix.dev',
+  description:  'How Renix.dev collects, uses, and protects your personal information.',
+  isPartOf:     { '@id': `${SITE.url}/#website` },
+  dateModified: lastUpdated,
+  breadcrumb:   { '@id': `${SITE.url}/privacy#breadcrumb` },
+};
+---
+
+<Layout
+  title="Privacy Policy | Renix.dev"
+  description="How Renix.dev collects, uses, and protects your personal information. We never sell your data — ever."
+  canonical={`${SITE.url}/privacy`}
+>
+  <script type="application/ld+json" slot="schema" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" slot="schema" set:html={JSON.stringify(webPageSchema)} />
+
+  <Navbar />
+  <main class="relative pt-32 pb-24">
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+    <div class="max-w-3xl mx-auto px-6 lg:px-8">
+      <div class="mb-12">
+        <nav aria-label="Breadcrumb" class="mb-6">
+          <ol class="flex items-center gap-2 text-xs text-ink-faint font-mono">
+            <li><a href="/" class="hover:text-ink-muted transition-colors">Home</a></li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" class="text-ink-muted">Privacy Policy</li>
+          </ol>
+        </nav>
+        <div class="section-label mb-5">Legal</div>
+        <h1 class="font-display font-bold text-4xl md:text-5xl text-ink mb-4">Privacy Policy</h1>
+        <p class="text-ink-muted text-sm font-mono">Last updated: <time datetime={lastUpdated}>{lastUpdatedDisplay}</time></p>
+      </div>
+
+      <div class="space-y-10">
+        <div>
+          <p class="text-ink-muted leading-relaxed mb-4">
+            Renix.dev ("we", "our", or "us") is committed to protecting your privacy. This policy explains what information we collect when you visit our website or contact us, how we use it, and what choices you have.
+          </p>
+          <p class="text-ink-muted leading-relaxed">
+            If you have any questions, email us at <a href="mailto:hello@renix.dev" class="text-accent hover:underline">hello@renix.dev</a>.
+          </p>
+        </div>
+
+        <section aria-labelledby="section-collect">
+          <h2 id="section-collect" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">1. Information We Collect</h2>
+          <div class="space-y-4 text-ink-muted text-sm leading-relaxed">
+            <p><strong class="text-ink">Information you give us directly:</strong> When you fill out the booking form on our website, we collect your name, email address, and the project brief you provide. This is used solely to respond to your enquiry and schedule a consultation.</p>
+            <p><strong class="text-ink">Technical data:</strong> Our hosting infrastructure may automatically collect standard server logs, including your IP address, browser type, referring URL, and pages visited. This data is used to maintain website performance and is not linked to your identity.</p>
+            <p><strong class="text-ink">Cookies:</strong> We use only essential cookies required for the website to function. We do not use tracking cookies, advertising cookies, or third-party analytics without your consent.</p>
+          </div>
+        </section>
+
+        <section aria-labelledby="section-use">
+          <h2 id="section-use" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">2. How We Use Your Information</h2>
+          <ul class="space-y-2 text-ink-muted text-sm leading-relaxed">
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>To respond to booking enquiries and schedule discovery calls</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>To send calendar confirmations for scheduled consultations</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>To maintain the operation and security of our website</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>To comply with legal obligations</span></li>
+          </ul>
+          <p class="text-ink-muted text-sm leading-relaxed mt-4 font-medium">We do not sell, rent, or share your personal data with third parties for marketing purposes. Ever.</p>
+        </section>
+
+        <section aria-labelledby="section-retention">
+          <h2 id="section-retention" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">3. Data Storage and Retention</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Booking submissions are processed by our secure API and may be stored in our internal systems for up to 12 months for managing client relationships. To request earlier deletion, email <a href="mailto:hello@renix.dev" class="text-accent hover:underline">hello@renix.dev</a> and we will action it within 30 days.</p>
+        </section>
+
+        <section aria-labelledby="section-rights">
+          <h2 id="section-rights" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">4. Your Rights</h2>
+          <p class="text-ink-muted text-sm leading-relaxed mb-4">Depending on your location, you may have the right to:</p>
+          <ul class="space-y-2 text-ink-muted text-sm leading-relaxed">
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Access the personal data we hold about you</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Request correction of inaccurate data</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Request deletion of your personal data</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Object to or restrict processing of your data</span></li>
+            <li class="flex gap-3"><span class="text-accent flex-shrink-0 mt-1">—</span><span>Withdraw consent at any time</span></li>
+          </ul>
+          <p class="text-ink-muted text-sm leading-relaxed mt-4">To exercise any of these rights, contact <a href="mailto:hello@renix.dev" class="text-accent hover:underline">hello@renix.dev</a>.</p>
+        </section>
+
+        <section aria-labelledby="section-third">
+          <h2 id="section-third" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">5. Third-Party Services</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Our website may be hosted on infrastructure operated by third-party providers (e.g. CDN, hosting). These providers may process technical data per their own privacy policies. We do not integrate with advertising networks or social media tracking pixels.</p>
+        </section>
+
+        <section aria-labelledby="section-changes">
+          <h2 id="section-changes" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">6. Changes to This Policy</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">We may update this policy from time to time. Material changes will be reflected in the "Last updated" date above. Continued use of our website following any changes constitutes acceptance of the updated policy.</p>
+        </section>
+
+        <section aria-labelledby="section-contact">
+          <h2 id="section-contact" class="font-display font-semibold text-xl text-ink mb-4 pb-3 border-b border-border/50">7. Contact</h2>
+          <p class="text-ink-muted text-sm leading-relaxed">Questions or concerns? Reach us at <a href="mailto:hello@renix.dev" class="text-accent hover:underline">hello@renix.dev</a></p>
+        </section>
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-border/40">
+        <a href="/" class="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7H2M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to home
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

@@ -1,0 +1,26 @@
+{
+  "name": "Renix.dev",
+  "short_name": "Renix",
+  "description": "Software development agency for web, AI, and mobile.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#050810",
+  "background_color": "#050810",
+  "lang": "en",
+  "scope": "/",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

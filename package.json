@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "renix-dev",
   "type": "module",
@@ -25,3 +26,39 @@
     "typescript": "^5.5.0"
   }
 }
+=======
+{
+  "name": "renix-dev",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "db:setup": "node scripts/init-db.mjs"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/tailwind": "^6.0.2",
+    "@astrojs/vercel": "^8.2.11",
+    "@neondatabase/serverless": "^1.1.0",
+    "astro": "^5.18.2",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.3.0",
+    "lucide-react": "^1.34.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  }
+}
+>>>>>>> cbbe2405399f00d3eb52549d05431e3c6386795e

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 import BookingForm from './BookingForm.jsx';
 ---
@@ -56,3 +57,80 @@ import BookingForm from './BookingForm.jsx';
 
   </div>
 </section>
+=======
+---
+import BookingForm from "./BookingForm";
+---
+
+<section
+  id="booking"
+  class="relative py-28 lg:py-36 overflow-hidden section-deferred"
+  aria-labelledby="booking-heading"
+>
+  <!-- Background grid & ambient gradients -->
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-30 pointer-events-none"></div>
+  <div
+    class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4f7cff]/40 to-transparent"
+  ></div>
+  <div
+    class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#1e2d45] to-transparent"
+  ></div>
+
+  <!-- Background glow -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] opacity-15 blur-[150px] pointer-events-none"
+    style="background: radial-gradient(circle, #4f7cff 0%, #a855f7 50%, transparent 75%);"
+    aria-hidden="true"
+  ></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+    <!-- Section header -->
+    <div class="max-w-3xl mb-14">
+      <div class="section-label mb-4">Direct Discovery Call</div>
+      <h2
+        id="booking-heading"
+        class="font-display font-bold text-section text-ink mb-5 leading-tight"
+      >
+        Let&apos;s talk architecture,<br />
+        <span class="text-ink-muted">timeline, and your vision.</span>
+      </h2>
+      <p class="text-ink-muted text-base leading-relaxed">
+        No sales reps or gatekeepers. You will speak directly with a senior engineer who will evaluate your architecture, answer questions honestly, and provide a clear roadmap.
+      </p>
+
+      <!-- Guarantees strip -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          "Free 45-min call · Zero pushy sales",
+          "Direct senior engineering review",
+          "Formal scope estimate in 24 hours",
+        ].map((item) => (
+          <div class="flex items-center gap-2.5 p-3 rounded-xl bg-[#0c1120]/60 border border-[#1e2d45]/60">
+            <div
+              class="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center bg-[#4ade80]/10 text-[#4ade80]"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path
+                  d="M2 5l2.5 2.5 3.5-4"
+                  stroke="#4ade80"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <span class="text-xs text-[#94a3b8] font-medium">{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- The form card with Neon glassmorphism -->
+    <div
+      class="rounded-3xl p-6 sm:p-8 lg:p-10 border border-[#1e2d45] bg-[#0c1120]/80 backdrop-blur-2xl shadow-[0_25px_80px_rgba(0,0,0,0.6),0_0_50px_rgba(79,124,255,0.08)]"
+    >
+      <BookingForm client:load />
+    </div>
+  </div>
+</section>
+>>>>>>> cbbe2405399f00d3eb52549d05431e3c6386795e

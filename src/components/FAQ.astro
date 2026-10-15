@@ -1,0 +1,75 @@
+---
+import { FAQ_ITEMS } from '../data/faq';
+
+// Build FAQPage JSON-LD for Google rich results (FAQ dropdown in SERP)
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map(({ q, a }) => ({
+    '@type':          'Question',
+    name:             q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text:    a,
+    },
+  })),
+};
+---
+
+<script type="application/ld+json" slot="schema" set:html={JSON.stringify(faqSchema)} />
+
+<section id="faq" class="relative py-28 lg:py-36 overflow-hidden section-deferred" aria-labelledby="faq-heading">
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24">
+
+      <!-- Left: Header -->
+      <div class="lg:col-span-2" data-reveal>
+        <div class="section-label mb-5">FAQ</div>
+        <h2 id="faq-heading" class="font-display font-bold text-section text-ink mb-5 leading-tight">
+          Questions<br/>
+          <span class="text-ink-muted">answered.</span>
+        </h2>
+        <p class="text-ink-muted text-sm leading-relaxed mb-8">
+          Still not sure? Book a free 30-minute call — we're happy to talk through your specific situation, no pressure.
+        </p>
+        <a href="#booking" class="btn-primary">
+          <span>Ask us directly</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="relative z-10">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Right: Accordion -->
+      <div class="lg:col-span-3 space-y-2">
+        {FAQ_ITEMS.map((faq, i) => (
+          <details
+            class="group border border-border/50 rounded-2xl bg-surface/20 hover:bg-surface/40 overflow-hidden transition-all duration-200 open:border-accent/20 open:bg-surface/50"
+            data-reveal
+            data-reveal-delay={String((i % 4) + 1)}
+          >
+            <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none select-none">
+              <span class="font-display font-medium text-sm text-ink/90 group-open:text-ink leading-snug pr-2">
+                {faq.q}
+              </span>
+              <span
+                class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 group-open:rotate-45"
+                style="border: 1px solid rgba(79,124,255,0.25); background: rgba(79,124,255,0.06);"
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path d="M5 1v8M1 5h8" stroke="#4f7cff" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="px-5 pb-5 pt-1">
+              <p class="text-sm text-ink-muted leading-relaxed">{faq.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>

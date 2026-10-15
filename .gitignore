@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 node_modules
+=======
+node_modules
+dist
+.astro
+.vercel
+>>>>>>> cbbe2405399f00d3eb52549d05431e3c6386795e
